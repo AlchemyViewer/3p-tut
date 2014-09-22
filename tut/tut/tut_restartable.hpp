@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
+#include <boost/throw_exception.hpp>
 
 /**
  * Template Unit Tests Framework for C++.
@@ -74,13 +75,13 @@ std::string unescape(const std::string& orig)
             ++i;
             if (i == e)
             {
-                throw std::invalid_argument("unexpected end of string");
+                boost::throw_exception(std::invalid_argument("unexpected end of string"));
             }
             unsigned int c1 = *i;
             ++i;
             if (i == e)
             {
-                throw std::invalid_argument("unexpected end of string");
+                boost::throw_exception(std::invalid_argument("unexpected end of string"));
             }
             unsigned int c2 = *i;
             rc += (((c1 - 'a') << 4) + (c2 - 'a'));
@@ -116,7 +117,7 @@ void serialize(std::ostream& os, const tut::test_result& tr)
         os << 4;
         break;
     default:
-        throw std::logic_error("operator << : bad result_type");
+        boost::throw_exception(std::logic_error("operator << : bad result_type"));
     }
     os << ' ' << escape(tr.message) << std::endl;
 }
@@ -129,7 +130,7 @@ void deserialize(std::istream& is, tut::test_result& tr)
     std::getline(is,tr.group);
     if (is.eof())
     {
-        throw tut::no_more_tests();
+        boost::throw_exception(tut::no_more_tests());
     }
     tr.group = unescape(tr.group);
 
@@ -137,7 +138,7 @@ void deserialize(std::istream& is, tut::test_result& tr)
     is >> tr.test;
     if (tr.test < 0)
     {
-        throw std::logic_error("operator >> : bad test number");
+        boost::throw_exception(std::logic_error("operator >> : bad test number"));
     }
 
     int n = -1;
@@ -160,7 +161,7 @@ void deserialize(std::istream& is, tut::test_result& tr)
         tr.result = test_result::term;
         break;
     default:
-        throw std::logic_error("operator >> : bad result_type");
+        boost::throw_exception(std::logic_error("operator >> : bad result_type"));
     }
 
     is.ignore(1); // space
@@ -168,7 +169,7 @@ void deserialize(std::istream& is, tut::test_result& tr)
     tr.message = unescape(tr.message);
     if (!is.good())
     {
-        throw std::logic_error("malformed test result");
+        boost::throw_exception(std::logic_error("malformed test result"));
     }
 }
 };
@@ -334,8 +335,8 @@ private:
         ojournal << std::flush;
         if (!ojournal.good())
         {
-            throw std::runtime_error("unable to register test result in file "
-                + jrn_);
+            boost::throw_exception(std::runtime_error("unable to register test result in file "
+                                                      + jrn_));
         }
     }
 
@@ -349,8 +350,8 @@ private:
         olog << util::escape(grp) << std::endl << test << std::endl << std::flush;
         if (!olog.good())
         {
-            throw std::runtime_error("unable to register execution in file "
-                + log_);
+            boost::throw_exception(std::runtime_error("unable to register execution in file "
+                                                      + log_));
         }
     }
 

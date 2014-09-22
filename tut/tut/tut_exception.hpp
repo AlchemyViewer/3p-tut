@@ -87,11 +87,13 @@ struct no_such_group : public tut_error
  * Internal exception to be throwed when
  * no more tests left in group or journal.
  */
-struct no_more_tests
+struct no_more_tests: public std::exception
 {
     no_more_tests()
     {
     }
+
+    const char* what() const throw() { return "no more tests"; }
 
     ~no_more_tests() throw()
     {
@@ -199,6 +201,26 @@ struct rethrown : public failure
     }
 
     const test_result tr;
+};
+
+/**
+ * Exception to be throwed when skip_fail() is called.
+ */
+struct skip_failure : public failure
+{
+    skip_failure(const std::string& msg) 
+        : failure(msg) 
+    {
+    }
+
+    test_result::result_type result() const
+    {
+        return test_result::skip;
+    }
+
+    ~skip_failure() throw()
+    {
+    }
 };
 
 }

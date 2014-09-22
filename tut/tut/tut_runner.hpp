@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "tut_exception.hpp"
+#include <boost/throw_exception.hpp>
 
 namespace tut
 {
@@ -110,7 +111,7 @@ public:
     {
         if (gr == 0)
         {
-            throw tut_error("group shall be non-null");
+            boost::throw_exception(tut_error("group shall be non-null"));
         }
 
         if (groups_.find(name) != groups_.end())
@@ -119,7 +120,7 @@ public:
             // this exception terminates application so we use cerr also
             // TODO: should this message appear in stream?
             std::cerr << msg << std::endl;
-            throw tut_error(msg);
+            boost::throw_exception(tut_error(msg));
         }
 
         groups_.insert( std::make_pair(name, gr) );
@@ -196,7 +197,7 @@ public:
         if (i == groups_.end())
         {
             callback_->run_completed();
-            throw no_such_group(group_name);
+            boost::throw_exception(no_such_group(group_name));
         }
 
         callback_->group_started(group_name);
@@ -224,7 +225,7 @@ public:
         if (i == groups_.end())
         {
             callback_->run_completed();
-            throw no_such_group(group_name);
+            boost::throw_exception(no_such_group(group_name));
         }
 
         callback_->group_started(group_name);
@@ -273,7 +274,7 @@ private:
 
             if (tr.result == test_result::ex_ctor)
             {
-                throw no_more_tests();
+                boost::throw_exception(no_more_tests());
             }
         }
     }

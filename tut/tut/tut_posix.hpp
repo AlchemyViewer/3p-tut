@@ -14,6 +14,7 @@
 #include <map>
 #include <iterator>
 #include <functional>
+#include <boost/throw_exception.hpp>
 
 #include "tut_result.hpp"
 #include "tut_assert.hpp"
@@ -248,13 +249,13 @@ private:
                     return;
                 }
                 else
-            {
-                std::stringstream ss;
+                {
+                    std::stringstream ss;
                     char e[1024];
                     ss << "child " << pid << " could not be killed with SIGKILL, " << strerror_r(errno, e, sizeof(e)) << std::endl;
-                fail(ss.str());
+                    fail(ss.str());
+                }
             }
-        }
 
             ensure_equals("wait after SIGKILL", waitpid_(pid, &status), pid);
             ensure_child_signal_(status, SIGKILL);
@@ -328,7 +329,7 @@ private:
             if(r > 0)
             {
                 ss.write(buffer, r);
-                throw rethrown( receive_result_(ss, pid) );
+                boost::throw_exception(rethrown( receive_result_(ss, pid) ));
             }
         }
 
@@ -343,7 +344,7 @@ private:
             ss << "child killed by signal " << WTERMSIG(status)
                 << ": expected exit with code " << exit_status;
 
-            throw failure(ss.str().c_str());
+            fail(ss.str().c_str());
         }
 
         if(WIFEXITED(status))
@@ -357,7 +358,7 @@ private:
                     << WEXITSTATUS(status)
                     << '\'';
 
-                throw failure(ss.str().c_str());
+                fail(ss.str().c_str());
             }
         }
 
@@ -366,7 +367,7 @@ private:
             std::stringstream ss;
             ss << "child stopped by signal " << WTERMSIG(status)
                 << ": expected exit with code " << exit_status;
-            throw failure(ss.str().c_str());
+            fail(ss.str().c_str());
         }
     }
 
@@ -382,7 +383,7 @@ private:
                     << "' actual '"
                     << WTERMSIG(status)
                     << '\'';
-                throw failure(ss.str().c_str());
+                fail(ss.str().c_str());
             }
         }
 
@@ -392,7 +393,7 @@ private:
             ss << "child exited with code " << WEXITSTATUS(status)
                 << ": expected signal " << signal;
 
-            throw failure(ss.str().c_str());
+            fail(ss.str().c_str());
         }
 
         if(WIFSTOPPED(status))
@@ -401,7 +402,7 @@ private:
             ss << "child stopped by signal " << WTERMSIG(status)
                 << ": expected kill by signal " << signal;
 
-            throw failure(ss.str().c_str());
+            fail(ss.str().c_str());
         }
     }
 

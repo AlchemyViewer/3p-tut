@@ -10,6 +10,10 @@
 #include <iterator>
 #include <algorithm>
 #include <typeinfo>
+#include <boost/throw_exception.hpp>
+#include <boost/exception/exception.hpp>
+#include <boost/exception/current_exception_cast.hpp>
+#include <boost/exception/diagnostic_information.hpp>
 
 #include "tut_exception.hpp"
 #include "tut_result.hpp"
@@ -180,8 +184,8 @@ class test_group : public group_base, public test_group_posix
             {
                 if (delete_obj() == false)
                 {
-                    throw warning("destructor of test object raised"
-                        " an SEH exception");
+                    boost::throw_exception(warning("destructor of test object raised"
+                                                   " an SEH exception"));
                 }
             }
             catch (const std::exception& ex)
@@ -191,15 +195,15 @@ class test_group : public group_base, public test_group_posix
                     std::string msg = "destructor of test object raised"
                         " exception: ";
                     msg += ex.what();
-                    throw warning(msg);
+                    boost::throw_exception(warning(msg));
                 }
             }
             catch( ... )
             {
                 if (permit_throw_in_dtor)
                 {
-                    throw warning("destructor of test object raised an"
-                        " exception");
+                    boost::throw_exception(warning("destructor of test object raised an"
+                                                   " exception"));
                 }
             }
         }
@@ -291,7 +295,7 @@ public:
     {
         if (current_test_ == tests_.end())
         {
-            throw no_more_tests();
+            boost::throw_exception(no_more_tests());
         }
 
         // find next user-specialized test
@@ -312,7 +316,7 @@ public:
             }
         }
 
-        throw no_more_tests();
+        boost::throw_exception(no_more_tests());
     }
 
     /**
@@ -323,19 +327,19 @@ public:
         // beyond tests is special case to discover upper limit
         if (tests_.rbegin() == tests_.rend())
         {
-            throw beyond_last_test();
+            boost::throw_exception(beyond_last_test());
         }
 
         if (tests_.rbegin()->first < n)
         {
-            throw beyond_last_test();
+            boost::throw_exception(beyond_last_test());
         }
 
         // withing scope; check if given test exists
         tests_iterator ti = tests_.find(n);
         if (ti == tests_.end())
         {
-            throw no_such_test();
+            boost::throw_exception(no_such_test());
         }
 
         safe_holder<object> obj;
@@ -359,7 +363,7 @@ public:
         {
             if (run_test_seh_(ti->second, obj, current_test_name) == false)
             {
-                throw seh("seh");
+                boost::throw_exception(seh("seh"));
             }
         }
         catch (const no_such_test&)
@@ -377,6 +381,29 @@ public:
             tr.exception_typeid = typeid(ex).name();
             tr.message = ex.what();
         }
+        catch (const boost::exception& ex)
+        {
+            const tut_error*      tutex = dynamic_cast<const tut_error*>(&ex);
+            const std::exception* stdex = dynamic_cast<const std::exception*>(&ex);
+            tr.exception_typeid = typeid(ex).name();
+            if (tutex)
+            {
+                tr.result  = tutex->result();
+                tr.message = tutex->what();
+            }
+            else
+            {
+                tr.result = test_result::ex;
+                if (stdex)
+                {
+                    tr.message = stdex->what();
+                }
+                else
+                {
+                    tr.message = boost::diagnostic_information(ex);
+                }
+            }
+        }
         catch (const std::exception& ex)
         {
             tr.result = test_result::ex;
@@ -385,8 +412,25 @@ public:
         }
         catch (...)
         {
+            const tut_error*      tutex = boost::current_exception_cast<tut_error>();
+            const std::exception* stdex = boost::current_exception_cast<std::exception>();
             // test failed with unknown exception
             tr.result = test_result::ex;
+            if (tutex)
+            {
+                tr.result = tutex->result();
+                tr.exception_typeid = typeid(*tutex).name();
+                tr.message = tutex->what();
+            }
+            else if (stdex)
+            {
+                tr.exception_typeid = typeid(*stdex).name();
+                tr.message = stdex->what();
+            }
+            else
+            {
+                tr.message = boost::current_exception_diagnostic_information();
+            }
         }
 
         if (obj.get())
@@ -440,7 +484,7 @@ public:
         if (obj->called_method_was_a_dummy_test_)
         {
             // do not call obj.release(); reuse object
-            throw no_such_test();
+            boost::throw_exception(no_such_test());
         }
 
         current_test_name = obj->get_test_name();
@@ -464,12 +508,12 @@ public:
         }
         catch (const std::exception& ex)
         {
-            throw bad_ctor(ex.what());
+            boost::throw_exception(bad_ctor(ex.what()));
         }
         catch (...)
         {
-            throw bad_ctor("test constructor has generated an exception;"
-                " group execution is terminated");
+            boost::throw_exception(bad_ctor("test constructor has generated an exception;"
+                                            " group execution is terminated"));
         }
     }
 };

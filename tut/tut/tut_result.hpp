@@ -51,6 +51,7 @@ struct test_result : public test_result_posix
      * ex - test throwed an exceptions
      * warn - test finished successfully, but test destructor throwed
      * term - test forced test application to terminate abnormally
+     * skip - test skpped because it is a known failure case
      */
     enum result_type
     {
@@ -60,7 +61,8 @@ struct test_result : public test_result_posix
         warn,
         term,
         ex_ctor,
-        rethrown
+        rethrown,
+        skip,
     };
 
     result_type result;
