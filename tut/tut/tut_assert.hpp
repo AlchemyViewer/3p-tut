@@ -79,9 +79,9 @@ void ensure_equals(const char* msg, const Q& actual, const T& expected)
         ss << (msg ? msg : "")
             << (msg ? ":" : "")
             << " expected '"
-            << (const T&)expected
+            //<< (const T&)expected (explicit cast didn't work - T & Q don't have operator << defined I guess...)
             << "' actual '"
-            << (const Q&)actual
+            //<< (const Q&)actual
             << '\'';
         fail(ss.str().c_str());
     }
