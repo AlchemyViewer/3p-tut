@@ -15,11 +15,26 @@
 #include <boost/exception/current_exception_cast.hpp>
 #include <boost/exception/diagnostic_information.hpp>
 
-#include "tut_exception.hpp"
-#include "tut_result.hpp"
-#include "tut_posix.hpp"
-#include "tut_assert.hpp"
-#include "tut_runner.hpp"
+// these headers have all sorts of (what clang thinks are) unused functions
+// -Wunused-function warnings and therefore errors on the clang (apple) build
+// Leaving it as for clang only because if we ever switch to clang on other
+// platforms the same issue will manifest itself.
+#if __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-function"
+#pragma clang diagnostic pop
+    #include "tut_exception.hpp"
+    #include "tut_result.hpp"
+    #include "tut_posix.hpp"
+    #include "tut_assert.hpp"
+    #include "tut_runner.hpp"
+#elif
+    #include "tut_exception.hpp"
+    #include "tut_result.hpp"
+    #include "tut_posix.hpp"
+    #include "tut_assert.hpp"
+    #include "tut_runner.hpp"
+#endif
 
 #if defined(TUT_USE_SEH)
 #include <windows.h>
