@@ -79,9 +79,9 @@ void ensure_equals(const char* msg, const Q& actual, const T& expected)
         ss << (msg ? msg : "")
             << (msg ? ":" : "")
             << " expected '"
-            << expected
+            << (const T&)expected
             << "' actual '"
-            << actual
+            << (const Q&)actual
             << '\'';
         fail(ss.str().c_str());
     }
