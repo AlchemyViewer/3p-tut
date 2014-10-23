@@ -15,7 +15,6 @@ namespace tut
 namespace
 {
 
-void fail(const char* msg = "");
 void fail(const std::string &msg);
 
 /**
@@ -71,26 +70,26 @@ void ensure_not(const T msg, bool cond)
  * client code will not compile at all!
  */
 template <class T, class Q>
-void ensure_equals(const char* msg, const Q& actual, const T& expected)
+void ensure_equals(const std::string& msg, const Q& actual, const T& expected)
 {
     if (expected != actual)
     {
-        std::stringstream ss;
-        ss << (msg ? msg : "")
-            << (msg ? ":" : "")
-            << " expected '"
-            //<< (const T&)expected (explicit cast didn't work - T & Q don't have operator << defined I guess...)
+        std::ostringstream ss;
+        if (! msg.empty())
+            ss << msg << ": ";
+        ss  << "expected '"
+            << expected
             << "' actual '"
-            //<< (const Q&)actual
+            << actual
             << '\'';
-        fail(ss.str().c_str());
+        fail(ss.str());
     }
 }
 
 template <class T, class Q>
 void ensure_equals(const Q& actual, const T& expected)
 {
-    ensure_equals<>(0, actual, expected);
+    ensure_equals("", actual, expected);
 }
 
 /**
@@ -118,7 +117,7 @@ void ensure_distance(const char* msg, const T& actual, const T& expected,
             << ") actual '"
             << actual
             << '\'';
-        fail(ss.str().c_str());
+        fail(ss.str());
     }
 }
 
@@ -138,7 +137,7 @@ void ensure_errno(const char *msg, bool cond)
         ss << (msg ? msg : "")
             << (msg? ": " : "")
             << strerror_r(errno, e, sizeof(e));
-        fail(ss.str().c_str());
+        fail(ss.str());
 #else
         fail(msg);
 #endif
@@ -148,11 +147,6 @@ void ensure_errno(const char *msg, bool cond)
 /**
  * Unconditionally fails with message.
  */
-void fail(const char* msg)
-{
-    boost::throw_exception(failure(msg));
-}
-
 void fail(const std::string &msg)
 {
     boost::throw_exception(failure(msg));
@@ -161,11 +155,6 @@ void fail(const std::string &msg)
 /**
  * Skip test because of known failure.
  */
-void skip(const char* msg = "")
-{
-    boost::throw_exception(skip_failure(msg));
-}
-
 void skip(const std::string& msg)
 {
     boost::throw_exception(skip_failure(msg));
@@ -174,7 +163,6 @@ void skip(const std::string& msg)
 } // end of namespace
 
 }
-
 
 #endif
 
