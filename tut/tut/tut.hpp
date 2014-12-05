@@ -28,7 +28,7 @@
     #include "tut_assert.hpp"
     #include "tut_runner.hpp"
 #pragma clang diagnostic pop
-#elif
+#else
     #include "tut_exception.hpp"
     #include "tut_result.hpp"
     #include "tut_posix.hpp"
