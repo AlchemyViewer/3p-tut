@@ -1,9 +1,11 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # turn on verbose debugging output for logs.
-set -x
+exec 4>&1; export BASH_XTRACEFD=4; set -x
 # make errors fatal
 set -e
+# bleat on references to undefined shell variables
+set -u
 
 # The tut package itself doesn't seem to have a version number anywhere other than 
 # the original source directory name, which conflicts with our vendor branching convention; 
