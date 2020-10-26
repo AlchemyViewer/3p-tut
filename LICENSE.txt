@@ -1,4 +1,4 @@
- Copyright 2002-2006 Vladimir Dyuzhev
+Copyright 2002-2006 Vladimir Dyuzhev
 Copyright 2007 Denis Kononenko
 Copyright 2008 Micha? Rzechonek
 
