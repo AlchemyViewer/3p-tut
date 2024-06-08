@@ -23,4 +23,4 @@ mkdir -p include
 cp -r "$TUT_SOURCE_DIR/tut" "./include/"
 
 mkdir -p LICENSES
-cp "../LICENSE.txt" LICENSES/tut.txt
+cp "../LICENSE.tut" LICENSES/tut.txt

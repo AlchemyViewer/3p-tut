@@ -1,3 +1,8 @@
+# 3p-tut
+
+[Autobuild][] packaged  tut.
+
+[Autobuild]: https://github.com/secondlife/autobuild
 
 This repository has the code drop from tut 2008-11-30 (they use dates
 as versions) in the 'vendor' branch, with Linden Lab changes applied
