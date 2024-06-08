@@ -4,7 +4,7 @@
     <key>package_description</key>
     <map>
       <key>canonical_repo</key>
-      <string>https://git.alchemyviewer.org/alchemy/thirdparty/3p-tut</string>
+      <string>https://github.com/AlchemyViewer/3p-tut</string>
       <key>copyright</key>
       <string>Copyright 2002-2006 Vladimir Dyuzhev, Copyright 2007 Denis Kononenko, Copyright 2008-2009 Michał Rzechonek</string>
       <key>description</key>
